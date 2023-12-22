@@ -50,13 +50,18 @@ floating_modifier $mod
 bindsym $mod+Return exec i3-sensible-terminal
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec dmenu_run
+# bindsym $mod+d exec dmenu_run
+#bindsym $mod+d exec "rofi -modi drun,run -show drun"
+bindsym $mod+d exec --no-startup-id ~/.config/rofi/launchers/type-3/launcher.sh
 bindsym $mod+m exec i3-dmenu-desktop
-
+bindsym $mod+Shift+e exec --no-startup-id ~/.config/rofi/powermenu/type-1/powermenu.sh
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+
+gaps inner 8
+gaps outer 5
 
 # change focus
 bindsym $mod+j focus left
@@ -142,23 +147,28 @@ bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace $workspace10
 
+bindsym $mod+Shift+z move workspace to output HDMI-0 next
+bindsym $mod+Shift+m move workspace to output DP-0 next
 
 assign [class="Gnome-terminal"] $workspace1
 assign [class="Google-chrome"] $workspace2
 assign [class="jetbrains-webstorm"] $workspace3
 assign [class="jetbrains-idea"] $workspace3
+assign [class="Code"] $workspace3
+assign [class="discord"] $workspace4
 assign [class="Slack"] $workspace4
 for_window [class="TelegramDesktop" ] move to workspace  $workspace4
 for_window [class="Slack" title=".*Slack \| Slack.*"] move to workspace $workspace5
 assign [class="zoom"] $workspace5
 for_window [class="Spotify"] move to workspace $workspace10
+assign [class="GitKraken"] $workspace3
+
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -167,11 +177,11 @@ mode "resize" {
         # Pressing left will shrink the window’s width.
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
-        # Pressing down will grow the window’s height.
+        # Pressing down will grow the window’s heighth
         bindsym j resize shrink width 10 px or 10 ppt
         bindsym k resize grow height 10 px or 10 ppt
         bindsym l resize shrink height 10 px or 10 ppt
-        bindsym ccedilla resize grow width 10 px or 10 ppt
+        bindsym h resize grow width 10 px or 10 ppt
 
         # same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt
@@ -196,8 +206,10 @@ set $urgent-bg-color     #E53935
 # finds out, if available)
 
 bar {
+  position top
   	#status_command i3status
-  	status_command i3status -c ~/.i3status.conf
+    #status_command i3status -c ~/.config/i3/i3status.conf
+    status_command SCRIPT_DIR=~/.config/i3blocks/scripts i3blocks
 	colors {
 		background $bg-color
 	    	separator #757575
@@ -211,10 +223,10 @@ bar {
 }
 
 #Lock, Poweroff, Reboot
-bindsym $mod+shift+x exec i3lock
+bindsym $mod+shift+x exec --no-startup-id ~/.config/i3/i3lock/lock.sh
 #bindsym $mod+x
 #bindsym $mod+shift+, systemctl poweroff
-#bindsym $mod+shift+. exec systemctl reboot
+bindsym $mod+shift+. exec systemctl reboot
 
 # popup strategy
 popup_during_fullscreen leave_fullscreen
@@ -230,10 +242,18 @@ bindsym XF86AudioPlay exec playerctl play
 bindsym XF86AudioPause exec playerctl pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
-bindsym Print exec screenshot
+# bindsym Print exec screenshot
+#interactive screenshot by pressing printscreen
+bindsym Print exec gnome-screenshot -i 
+#crop-area screenshot by pressing Mod + printscreen
+bindsym $mod+Print exec gnome-screenshot -a
 
 #Startup
-exec_always --no-startup-id feh --bg-scale ~/Downloads/we-know-whats-awp.jpg
-exec_always --no-startup-id xrandr --output HDMI-1 --off --output DP-1 --mode 1600x900 --pos 176x0 --rotate normal --output eDP-1 --primary --mode 1920x1080 --pos 0x900 --rotate normal --output DP-2 --off
+exec_always --no-startup-id feh --bg-scale ~/Documents/ricky-throne.jpg
+exec_always --no-startup-id exec bash ~/.config/i3/stacked-monitor.sh
+#exec_always --no-startup-id exec bash ~/.config/polybar/launch.sh --grayblocks
 
-exec --no-startup-id compton -f
+exec --no-startup-id picom -b
+
+exec --no-startup-id nm-applet &
+exec --no-startup-id blueman-applet &
